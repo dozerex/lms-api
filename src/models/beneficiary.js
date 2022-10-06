@@ -51,15 +51,6 @@ const BeneficiarySchema = new mongoose.Schema({
     }]
 })
 
-BeneficiarySchema.statics.canLend = function(enrollmentNumber) {
-    return this.findOne({
-        enrollmentNumber,
-        booksLent: {$exists:true}, 
-        $where:"obj.booksLent.length<5"
-    })
-}
-
-
 const Beneficiary = mongoose.model('Beneficiary',BeneficiarySchema)
 
 
