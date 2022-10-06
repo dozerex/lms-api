@@ -36,7 +36,7 @@ const BookStatusSchema = new mongoose.Schema({
     }
 })
 
-BookStatus.statics.isAvailable = function(accessionNumber) {
+BookStatusSchema.statics.isAvailable = function(accessionNumber) {
     return this.findOne({
         accessionNumber,
         available: true
