@@ -30,7 +30,7 @@ const BookStatusSchema = new mongoose.Schema({
         ref: "Book",
         required: true
     },
-    lentBy: {
+    issuedTo: {
         type: mongoose.Schema.Types.ObjectId,
         ref:"Beneficiary"
     }
