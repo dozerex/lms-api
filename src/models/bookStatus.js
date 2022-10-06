@@ -36,6 +36,13 @@ const BookStatusSchema = new mongoose.Schema({
     }
 })
 
+BookStatus.statics.isAvailable = function(accessionNumber) {
+    return this.findOne({
+        accessionNumber,
+        available: true
+    })
+}
+
 const BookStatus = mongoose.model('BookStatus',BookStatusSchema)
 
 module.exports = BookStatus
