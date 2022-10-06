@@ -51,7 +51,6 @@ const BeneficiarySchema = new mongoose.Schema({
     }]
 })
 
-
 const Beneficiary = mongoose.model('Beneficiary',BeneficiarySchema)
 
 

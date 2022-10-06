@@ -30,11 +30,18 @@ const BookStatusSchema = new mongoose.Schema({
         ref: "Book",
         required: true
     },
-    lentBy: {
+    issuedTo: {
         type: mongoose.Schema.Types.ObjectId,
         ref:"Beneficiary"
     }
 })
+
+BookStatusSchema.statics.isAvailable = function(accessionNumber) {
+    return this.findOne({
+        accessionNumber,
+        available: true
+    })
+}
 
 const BookStatus = mongoose.model('BookStatus',BookStatusSchema)
 
