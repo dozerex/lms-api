@@ -102,6 +102,43 @@ bookRouter.post('/issue-book/', async (req,res) => {
     }
 })
 
+bookRouter.post('/return-book/', async (req, res) => {
+    const {accessionNumber} = req.body
+    try {
+        const book = await BookStatus.findOne({accessionNumber})
+        if(book.available) throw new Error("Book is already available")
+        const beneficiary_id = book.issuedTo
+        await BookStatus.updateOne({_id:book._id},{
+            $set:{
+                available: true
+            },
+            $unset:{
+                issueDate:"",
+                dueDate:"",
+                issuedTo:""
+            }
+        })
+        const mainBook = await Book.findOne({_id:book.book})
+        await Book.updateOne({_id:mainBook._id},{$set:{
+            available:(mainBook.available+1)
+        }})
+        const beneficiary = await Beneficiary.findOne({_id:beneficiary_id})
+        // console.log(beneficiary)
+        let booksLent = beneficiary.booksLent.filter(item=>String(book._id)!=String(item))
+        // console.log(booksLent)
+        await Beneficiary.updateOne({_id:beneficiary._id},{
+            $set:{
+                booksLent
+            }
+        })
+        return res.send("Done")
+    } catch(e) {
+        console.log(e)
+        return res.status(400).send("Cant update")
+    }
+
+})
+
 
 module.exports = bookRouter
 
