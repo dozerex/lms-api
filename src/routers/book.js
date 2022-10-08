@@ -139,17 +139,14 @@ bookRouter.post('/return/', async (req, res) => {
                 issuedTo:""
             }
         })
-        const mainBook = await Book.findOne({_id:book.book})
-        await Book.updateOne({_id:mainBook._id},{$set:{
-            available:(mainBook.available+1)
-        }})
-        const beneficiary = await Beneficiary.findOne({_id:beneficiary_id})
-        // console.log(beneficiary)
-        let booksLent = beneficiary.booksLent.filter(item=>String(book._id)!=String(item))
-        // console.log(booksLent)
-        await Beneficiary.updateOne({_id:beneficiary._id},{
-            $set:{
-                booksLent
+        await Book.updateOne({_id:book.book},{
+            $inc:{
+                available:1
+            }
+        })
+        await Beneficiary.updateOne({_id:beneficiary_id},{
+            $pull:{
+                booksLent:book._id
             }
         })
         return res.send("Done")
