@@ -108,8 +108,7 @@ bookRouter.post('/issue/', async (req,res) => {
             booksLent
         }})
         const today = getTodayDateOnly()
-        console.log(today)
-        await BookStatus.updateOne(book,{$set:{
+        await BookStatus.updateOne({_id:book._id},{$set:{
             available: false,
             issueDate: today,
             dueDate: req.body.dueDate,
