@@ -58,6 +58,26 @@ bookRouter.get('/book-available/',async (req,res)=>{
     }
 })
 
+bookRouter.get('/due/', async (req, res) => {
+    const today = new Date()
+    console.log(today.toISOString())
+    try {
+        const books = await BookStatus.find({
+            dueDate: {
+                $exists: true,
+                $lte: today.toISOString()
+            }
+        })
+        if(!books) {
+            return res.send("No Due books")
+        }
+        return res.send(books)
+    } catch(e) {
+        res.status(400).send("Unable to process your request, please try again")
+    }
+})
+
+
 bookRouter.post('/issue-book/', async (req,res) => {
     const {accessionNumber,enrollmentNumber} = req.body
     let book,beneficiary
