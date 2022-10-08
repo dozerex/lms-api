@@ -1,5 +1,8 @@
 const mongoose = require('mongoose')
 
+//helper
+const getTodayDateOnly = require('../helper/getTodayDateOnly')
+
 
 const BookStatusSchema = new mongoose.Schema({
     // isbn:{
@@ -44,13 +47,32 @@ BookStatusSchema.statics.isAvailable = function(accessionNumber) {
 }
 
 BookStatusSchema.statics.dueBooks = function() {
-    const today = new Date()
+    const today = getTodayDateOnly()
     return BookStatus.find({
         dueDate: {
             $exists: true,
-            $lte: today.toISOString()
+            $lte: today
         }
     })
+}
+
+BookStatusSchema.statics.dueBoooksToday = function() {
+    const today = getTodayDateOnly()
+    return BookStatus.find({
+        $and: [
+            {dueDate: {$exists: true} },
+            {dueDate: today}
+        ]
+    })
+}
+
+BookStatusSchema.statics.countDueBooksToday = function() {
+    const today = getTodayDateOnly()
+    return BookStatus.find()
+}
+
+BookStatusSchema.statics.countDueBooks = function() {
+
 }
 
 const BookStatus = mongoose.model('BookStatus',BookStatusSchema)
