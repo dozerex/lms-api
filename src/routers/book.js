@@ -103,9 +103,11 @@ bookRouter.post('/issue/', async (req,res) => {
         await Beneficiary.updateOne({_id:beneficiary._id},{$set:{
             booksLent
         }})
+        let today = new Date()
+        today = today.toISOString().slice(0,10)
         await BookStatus.updateOne(book,{$set:{
             available: false,
-            issueDate: Date(Date.now()),
+            issueDate: today,
             dueDate: req.body.dueDate,
             issuedTo: beneficiary._id
         }})
