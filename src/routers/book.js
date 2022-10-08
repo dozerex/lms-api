@@ -78,7 +78,7 @@ bookRouter.get('/due/', async (req, res) => {
 })
 
 
-bookRouter.post('/issue-book/', async (req,res) => {
+bookRouter.post('/issue/', async (req,res) => {
     const {accessionNumber,enrollmentNumber} = req.body
     let book,beneficiary
     try {  
@@ -122,7 +122,7 @@ bookRouter.post('/issue-book/', async (req,res) => {
     }
 })
 
-bookRouter.post('/return-book/', async (req, res) => {
+bookRouter.post('/return/', async (req, res) => {
     const {accessionNumber} = req.body
     try {
         const book = await BookStatus.findOne({accessionNumber})
