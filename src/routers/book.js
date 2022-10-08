@@ -85,7 +85,6 @@ bookRouter.post('/issue/', async (req,res) => {
             throw new Error()
         }
     } catch(e) {
-        console.log(e)
         return res.status(400).send("Book not available")
     }
     try {
@@ -98,22 +97,25 @@ bookRouter.post('/issue/', async (req,res) => {
         return res.status(400).send(e)
     }
     try {
-        const mainBook = await Book.findOne({_id:book.book})
-        await Book.updateOne(mainBook,{$set:{
-            available:(mainBook.available-1)
-        }})
-        let booksLent = beneficiary.booksLent
-        booksLent.push(book._id)
-        await Beneficiary.updateOne({_id:beneficiary._id},{$set:{
-            booksLent
-        }})
+        await Book.updateOne({_id:book.book},{
+            $inc:{
+                available:-1
+            }
+        })
+        await Beneficiary.updateOne({_id:beneficiary._id},{
+            $push:{
+                booksLent:book._id
+            }
+        })
         const today = getTodayDateOnly()
-        await BookStatus.updateOne({_id:book._id},{$set:{
-            available: false,
-            issueDate: today,
-            dueDate: req.body.dueDate,
-            issuedTo: beneficiary._id
-        }})
+        await BookStatus.updateOne({_id:book._id},{
+            $set:{
+                available: false,
+                issueDate: today,
+                dueDate: req.body.dueDate,
+                issuedTo: beneficiary._id
+            }
+        })
         return res.status(201).send("Done")
     } catch(e) {
         console.log(e)
