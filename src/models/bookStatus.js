@@ -43,6 +43,16 @@ BookStatusSchema.statics.isAvailable = function(accessionNumber) {
     })
 }
 
+BookStatusSchema.statics.dueBooks = function() {
+    const today = new Date()
+    return BookStatus.find({
+        dueDate: {
+            $exists: true,
+            $lte: today.toISOString()
+        }
+    })
+}
+
 const BookStatus = mongoose.model('BookStatus',BookStatusSchema)
 
 module.exports = BookStatus
