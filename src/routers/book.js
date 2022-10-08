@@ -60,14 +60,8 @@ bookRouter.get('/book-available/',async (req,res)=>{
 
 bookRouter.get('/due/', async (req, res) => {
     const today = new Date()
-    console.log(today.toISOString())
     try {
-        const books = await BookStatus.find({
-            dueDate: {
-                $exists: true,
-                $lte: today.toISOString()
-            }
-        })
+        const books = await BookStatus.dueBooks()
         if(!books) {
             return res.send("No Due books")
         }
