@@ -6,6 +6,10 @@ const Beneficiary = require('../models/beneficiary')
 const Book = require('../models/book')
 const BookStatus = require('../models/bookStatus')
 
+
+//helper
+const getTodayDateOnly = require('../helper/getTodayDateOnly')
+
 const bookRouter = express.Router({
     strict: true
 })
@@ -103,8 +107,8 @@ bookRouter.post('/issue/', async (req,res) => {
         await Beneficiary.updateOne({_id:beneficiary._id},{$set:{
             booksLent
         }})
-        let today = new Date()
-        today = today.toISOString().slice(0,10)
+        const today = getTodayDateOnly()
+        console.log(today)
         await BookStatus.updateOne(book,{$set:{
             available: false,
             issueDate: today,
