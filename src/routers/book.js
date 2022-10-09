@@ -158,5 +158,28 @@ bookRouter.post('/return/', async (req, res) => {
 })
 
 
+bookRouter.get('/stats/', async (req, res) => {
+    const today = getTodayDateOnly()
+    let count = {}
+    try {
+        count.todayDueBooks = await BookStatus.countDocuments({
+            dueDate: today
+        })
+        count.dueBooks = await BookStatus.countDocuments({
+            dueDate: {
+                $lte: today
+            }
+        })
+        count.issuedToday = await BookStatus.countDocuments({
+            issueDate: today
+        })
+        return res.send(count)
+    } catch(e) {
+        console.log(e)
+        res.status(400).send("Unable to fetch data")
+    }
+})
+
+
 module.exports = bookRouter
 
