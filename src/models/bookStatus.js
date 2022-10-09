@@ -48,7 +48,7 @@ BookStatusSchema.statics.isAvailable = function(accessionNumber) {
 
 BookStatusSchema.statics.dueBooks = function() {
     const today = getTodayDateOnly()
-    return BookStatus.find({
+    return this.find({
         dueDate: {
             $exists: true,
             $lte: today
@@ -58,21 +58,12 @@ BookStatusSchema.statics.dueBooks = function() {
 
 BookStatusSchema.statics.dueBoooksToday = function() {
     const today = getTodayDateOnly()
-    return BookStatus.find({
+    return this.find({
         $and: [
             {dueDate: {$exists: true} },
             {dueDate: today}
         ]
     })
-}
-
-BookStatusSchema.statics.countDueBooksToday = function() {
-    const today = getTodayDateOnly()
-    return BookStatus.find()
-}
-
-BookStatusSchema.statics.countDueBooks = function() {
-
 }
 
 const BookStatus = mongoose.model('BookStatus',BookStatusSchema)
