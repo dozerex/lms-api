@@ -5,6 +5,7 @@ const express = require('express')
 const Beneficiary = require('../models/beneficiary')
 const Book = require('../models/book')
 const BookStatus = require('../models/bookStatus')
+const BookState = require('../models/bookState')
 
 
 //helper
@@ -123,8 +124,35 @@ bookRouter.post('/issue/', async (req,res) => {
     }
 })
 
-bookRouter.post('/return/', async (req, res) => {
+bookRouter.post('/status/', async (req, res) => {
     const {accessionNumber} = req.body
+    try {
+        const bookDetail = await BookStatus.findOne({accessionNumber}).populate('issuedTo').populate('book')
+        res.send(bookDetail)
+    } catch(e) {
+        res.status(400).send("Wrong")
+    }
+})
+
+bookRouter.post('/renew/', async (req, res) => {
+    const {accessionNumber, dueDate} = req.body
+    const today = getTodayDateOnly()
+    try {
+        const book = await BookStatus.updateOne({accessionNumber},{
+            $set: {
+                issueDate: today,
+                dueDate
+            }
+        })
+        res.send(book)
+    } catch(e) {
+        res.status(400).send("Can't renew this book")
+    }
+})
+
+
+bookRouter.post('/return/', async (req, res) => {
+    const {accessionNumber,status} = req.body
     try {
         const book = await BookStatus.findOne({accessionNumber})
         if(book.available) throw new Error("Book is already available")
@@ -149,6 +177,14 @@ bookRouter.post('/return/', async (req, res) => {
                 booksLent:book._id
             }
         })
+        if(status) {
+            const result = await BookState.updateOne({_id:book.status},{
+                $push: {
+                    message: status
+                }
+            })
+            console.log(result)
+        }
         return res.send("Done")
     } catch(e) {
         console.log(e)

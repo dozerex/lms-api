@@ -1,7 +1,11 @@
 const mongoose = require('mongoose')
+const {ObjectId} = require('mongodb')
 
 //helper
 const getTodayDateOnly = require('../helper/getTodayDateOnly')
+
+//model
+const BookState = require('../models/bookState')
 
 
 const BookStatusSchema = new mongoose.Schema({
@@ -36,6 +40,21 @@ const BookStatusSchema = new mongoose.Schema({
     issuedTo: {
         type: mongoose.Schema.Types.ObjectId,
         ref:"Beneficiary"
+    },
+    status: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref:"BookState"
+    }
+})
+
+BookStatusSchema.pre('save', async function (next) {
+    const bookState = new BookState({})
+    try {
+        await bookState.save()
+        this.status = bookState._id
+        next()
+    } catch(e) {
+        throw new Error("Error")
     }
 })
 
