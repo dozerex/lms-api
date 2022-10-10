@@ -5,6 +5,7 @@ const express = require('express')
 const Beneficiary = require('../models/beneficiary')
 const Book = require('../models/book')
 const BookStatus = require('../models/bookStatus')
+const BookState = require('../models/bookState')
 
 
 //helper
@@ -151,7 +152,7 @@ bookRouter.post('/renew/', async (req, res) => {
 
 
 bookRouter.post('/return/', async (req, res) => {
-    const {accessionNumber} = req.body
+    const {accessionNumber,status} = req.body
     try {
         const book = await BookStatus.findOne({accessionNumber})
         if(book.available) throw new Error("Book is already available")
@@ -176,6 +177,14 @@ bookRouter.post('/return/', async (req, res) => {
                 booksLent:book._id
             }
         })
+        if(status) {
+            const result = await BookState.updateOne({_id:book.status},{
+                $push: {
+                    message: status
+                }
+            })
+            console.log(result)
+        }
         return res.send("Done")
     } catch(e) {
         console.log(e)
