@@ -6,6 +6,7 @@ const Beneficiary = require('../models/beneficiary')
 const Book = require('../models/book')
 const BookStatus = require('../models/bookStatus')
 const BookState = require('../models/bookState')
+const Fine = require('../models/fine')
 
 
 //helper
@@ -135,7 +136,7 @@ bookRouter.post('/status/', async (req, res) => {
 })
 
 bookRouter.post('/renew/', async (req, res) => {
-    const {accessionNumber, dueDate} = req.body
+    const {accessionNumber, dueDate, fine} = req.body
     const today = getTodayDateOnly()
     try {
         const book = await BookStatus.updateOne({accessionNumber},{
@@ -144,6 +145,18 @@ bookRouter.post('/renew/', async (req, res) => {
                 dueDate
             }
         })
+        if(fine) {
+            const book = await BookStatus.findOne({accessionNumber})
+            const today = getTodayDateOnly()
+            const newFine = new Fine({
+                date: today,
+                amount: fine.amount,
+                reason: fine.reason,
+                accessionNumber,
+                to: book.issuedTo
+            })
+            await newFine.save()
+        }
         res.send(book)
     } catch(e) {
         res.status(400).send("Can't renew this book")
@@ -152,7 +165,7 @@ bookRouter.post('/renew/', async (req, res) => {
 
 
 bookRouter.post('/return/', async (req, res) => {
-    const {accessionNumber,status} = req.body
+    const {accessionNumber,status,fine} = req.body
     try {
         const book = await BookStatus.findOne({accessionNumber})
         if(book.available) throw new Error("Book is already available")
@@ -184,6 +197,17 @@ bookRouter.post('/return/', async (req, res) => {
                 }
             })
             console.log(result)
+        }
+        if(fine) {
+            const today = getTodayDateOnly()
+            const newFine = new Fine({
+                date: today,
+                amount: fine.amount,
+                reason: fine.reason,
+                accessionNumber,
+                to: beneficiary_id
+            })
+            await newFine.save()
         }
         return res.send("Done")
     } catch(e) {
