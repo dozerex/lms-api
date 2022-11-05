@@ -25,8 +25,11 @@ const TransactionSchema = new mongoose.Schema({
     returnDate: {
         type: Date
     },
-    fine: {
+    fineAmount: {
         type: Number
+    },
+    reason: {
+        type: String
     },
     enrollmentNumber: {
         type: String
