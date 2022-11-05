@@ -23,6 +23,22 @@ beneficiaryRouter.post('/insert/',(req,res)=> {
 })
 
 
+beneficiaryRouter.get('/list/',async (req,res) => {
+    try {
+        const beneficiaries = await Beneficiary.find({});
+        const numberOfStudents = await Beneficiary.countDocuments({
+            role: "student"
+        })
+        const numberofFaculty = await Beneficiary.countDocuments({
+            role: "faculty"
+        })
+        res.status(200).send({beneficiaries,numberOfStudents,numberofFaculty})
+    } catch(e) {
+        res.status(400).send("Unable to retrieve data");
+    }
+})
+
+
 beneficiaryRouter.post('/books-lent/', async (req, res) => {
     try {
         const beneficiary = await Beneficiary.findOne(req.body);
