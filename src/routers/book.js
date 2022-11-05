@@ -17,17 +17,18 @@ const bookRouter = express.Router({
 })
 
 
-bookRouter.post('/insert/',(req, res)=>{
+bookRouter.post('/insert/', async (req, res)=>{
     const book = new Book({
         ... req.body,
         date: Date(Date.now()),
         available: req.body.copies,
     })
-    book.save().then((book)=>{
+    try {
+        await book.save();
         res.status(201).send(book)
-    }).catch((e)=>{
+    } catch(e) {
         res.status(400).send(e)
-    })
+    }
 })
 
 bookRouter.get('/search/',async (req,res) => {
