@@ -25,16 +25,17 @@ beneficiaryRouter.post('/insert/',(req,res)=> {
 
 beneficiaryRouter.get('/list/',async (req,res) => {
     try {
-        const beneficiaries = await Beneficiary.find({});
+        const beneficiaries = await Beneficiary.find({}).select(["email","name","enrollmentNumber","role"]);
         const numberOfStudents = await Beneficiary.countDocuments({
             role: "student"
         })
         const numberofFaculty = await Beneficiary.countDocuments({
             role: "faculty"
         })
-        res.status(200).send({beneficiaries,numberOfStudents,numberofFaculty})
+        res.status(200).send(beneficiaries)
     } catch(e) {
         res.status(400).send("Unable to retrieve data");
+        console.log(e);
     }
 })
 
