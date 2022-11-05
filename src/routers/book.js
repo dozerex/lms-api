@@ -7,6 +7,7 @@ const Book = require('../models/book')
 const BookStatus = require('../models/bookStatus')
 const BookState = require('../models/bookState')
 const Fine = require('../models/fine')
+const Transaction = require('../models/transaction')
 
 
 //helper
@@ -23,11 +24,17 @@ bookRouter.post('/insert/', async (req, res)=>{
         date: Date(Date.now()),
         available: req.body.copies,
     })
+    const transaction = new Transaction({
+        date: getTodayDateOnly(),
+        operation: "insert book",
+        isbn: req.body.isbn
+    })
     try {
         await book.save();
+        await transaction.save()
         res.status(201).send(book)
     } catch(e) {
-        res.status(400).send(e)
+        res.status(400).send("Unable to insert new book")
     }
 })
 
@@ -119,10 +126,23 @@ bookRouter.post('/issue/', async (req,res) => {
                 issuedTo: beneficiary._id
             }
         })
-        return res.status(201).send("Done")
     } catch(e) {
         console.log(e)
         res.status(400).send("Updation failed")
+    }
+    const transaction = new Transaction({
+        date: getTodayDateOnly(),
+        operation: "issue book",
+        accessionNumber,
+        issueDate: getTodayDateOnly(),
+        dueDate: req.body.dueDate,
+        enrollmentNumber,
+    })
+    try {
+        await transaction.save()
+        return res.status(200).send("Done")
+    } catch(e) {
+        res.status(200).send("Done, but transaction not added")
     }
 })
 
@@ -139,6 +159,13 @@ bookRouter.post('/status/', async (req, res) => {
 bookRouter.post('/renew/', async (req, res) => {
     const {accessionNumber, dueDate, fine} = req.body
     const today = getTodayDateOnly()
+    const transactionRenew = new Transaction({
+        date: today,
+        operation: "renew book",
+        accessionNumber,
+        issueDate: today,
+        dueDate
+    })
     try {
         const book = await BookStatus.updateOne({accessionNumber},{
             $set: {
@@ -146,6 +173,7 @@ bookRouter.post('/renew/', async (req, res) => {
                 dueDate
             }
         })
+        await transactionRenew.save()
         if(fine) {
             const book = await BookStatus.findOne({accessionNumber})
             const today = getTodayDateOnly()
@@ -156,10 +184,19 @@ bookRouter.post('/renew/', async (req, res) => {
                 accessionNumber,
                 to: book.issuedTo
             })
+            const transactionFine = new Transaction({
+                date: today,
+                operation: "fine book",
+                accessionNumber,
+                fineAmount: fine.amount,
+                reason: fine.reason
+            })
             await newFine.save()
+            await transactionFine.save()
         }
         res.send(book)
     } catch(e) {
+        console.log(e)
         res.status(400).send("Can't renew this book")
     }
 })
@@ -167,10 +204,19 @@ bookRouter.post('/renew/', async (req, res) => {
 
 bookRouter.post('/return/', async (req, res) => {
     const {accessionNumber,status,fine} = req.body
+    
     try {
         const book = await BookStatus.findOne({accessionNumber})
         if(book.available) throw new Error("Book is already available")
         const beneficiary_id = book.issuedTo
+        const {enrollmentNumber} = await Beneficiary.findOne({_id:beneficiary_id}).select('enrollmentNumber')
+        const transaction = new Transaction({
+            date: getTodayDateOnly(),
+            operation: "return book",
+            accessionNumber,
+            returnDate: getTodayDateOnly(),
+            enrollmentNumber
+        })
         await BookStatus.updateOne({_id:book._id},{
             $set:{
                 available: true
@@ -199,6 +245,7 @@ bookRouter.post('/return/', async (req, res) => {
             })
             console.log(result)
         }
+        await transaction.save()
         if(fine) {
             const today = getTodayDateOnly()
             const newFine = new Fine({
@@ -208,7 +255,15 @@ bookRouter.post('/return/', async (req, res) => {
                 accessionNumber,
                 to: beneficiary_id
             })
+            const transactionFine = new Transaction({
+                date: getTodayDateOnly(),
+                operation: "fine book",
+                accessionNumber,
+                fineAmount: fine.amount,
+                reason: fine.reason
+            })
             await newFine.save()
+            await transactionFine.save()
         }
         return res.send("Done")
     } catch(e) {
