@@ -39,19 +39,36 @@ beneficiaryRouter.get('/list/',async (req,res) => {
 })
 
 
-beneficiaryRouter.post('/books-lent/', async (req, res) => {
+beneficiaryRouter.get('/:id/', async (req, res) => {
+    const enrollmentNumber = req.params.id;
     try {
-        const beneficiary = await Beneficiary.findOne(req.body);
+        const beneficiary = await Beneficiary.findOne({
+            enrollmentNumber
+        })
         const booksLent = beneficiary.booksLent;
         const books = await BookStatus.find({
             _id : {$in: booksLent}
         })
-        res.send(books)
+        res.send({beneficiary,books})
     } catch(e) {
         console.log("error")
         return res.status(400).send("No Beneficiary")
     }
 })
+
+// beneficiaryRouter.post('/books-lent/', async (req, res) => {
+//     try {
+//         const beneficiary = await Beneficiary.findOne(req.body);
+//         const booksLent = beneficiary.booksLent;
+//         const books = await BookStatus.find({
+//             _id : {$in: booksLent}
+//         })
+//         res.send(books)
+//     } catch(e) {
+//         console.log("error")
+//         return res.status(400).send("No Beneficiary")
+//     }
+// })
 
 
 module.exports = beneficiaryRouter
