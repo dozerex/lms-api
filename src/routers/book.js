@@ -25,7 +25,7 @@ bookRouter.post('/insert/', async (req, res)=>{
         available: req.body.copies,
     })
     const transaction = new Transaction({
-        date: getTodayDateOnly(),
+        date: Date(Date.now()),
         operation: "insert book",
         isbn: req.body.isbn
     })
@@ -131,7 +131,7 @@ bookRouter.post('/issue/', async (req,res) => {
         res.status(400).send("Updation failed")
     }
     const transaction = new Transaction({
-        date: getTodayDateOnly(),
+        date: Date(Date.now()),
         operation: "issue book",
         accessionNumber,
         issueDate: getTodayDateOnly(),
@@ -211,7 +211,7 @@ bookRouter.post('/return/', async (req, res) => {
         const beneficiary_id = book.issuedTo
         const {enrollmentNumber} = await Beneficiary.findOne({_id:beneficiary_id}).select('enrollmentNumber')
         const transaction = new Transaction({
-            date: getTodayDateOnly(),
+            date: Date(Date.now()),
             operation: "return book",
             accessionNumber,
             returnDate: getTodayDateOnly(),
@@ -247,16 +247,15 @@ bookRouter.post('/return/', async (req, res) => {
         }
         await transaction.save()
         if(fine) {
-            const today = getTodayDateOnly()
             const newFine = new Fine({
-                date: today,
+                date: Date(Date.now()),
                 amount: fine.amount,
                 reason: fine.reason,
                 accessionNumber,
                 to: beneficiary_id
             })
             const transactionFine = new Transaction({
-                date: getTodayDateOnly(),
+                date: Date(Date.now()),
                 operation: "fine book",
                 accessionNumber,
                 fineAmount: fine.amount,
