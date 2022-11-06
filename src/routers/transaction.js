@@ -46,5 +46,34 @@ transactionRouter.get('/book-stats/', async (req, res) => {
     }
 })
 
+transactionRouter.get('/dashboard-stats/', async (req, res) => {
+    const today = getTodayDateOnly();
+    let count = {}
+    try {
+        count.returnedToday = await Transaction.countDocuments({
+            date: {
+                $gte:today
+            },
+            operation: "return book"
+        })
+        const fine = await Transaction.find({
+            date: {
+                $gte: today 
+            },
+            operation: "fine book"
+        }).select("fineAmount")
+        console.log(fine)
+        let sum = 0;
+        fine.forEach(function (value) {
+            sum+=value.fineAmount;
+        })
+        count.fineCollectedToday = sum
+        res.send(count)
+    } catch(e) {
+        console.log(e)
+        res.status(400).send(e)
+    }
+})
+
 
 module.exports = transactionRouter
