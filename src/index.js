@@ -9,6 +9,7 @@ require('./db/mongoose')
 const bookRouter = require('./routers/book')
 const userRouter = require('./routers/user')
 const beneficiaryRouter = require('./routers/beneficiary')
+const transactionRouter = require('./routers/transaction')
 
 
 const app = express()
@@ -20,6 +21,7 @@ app.use(cors())
 app.use('/books',bookRouter)
 app.use('/users',userRouter)
 app.use('/beneficiary',beneficiaryRouter)
+app.use('/transaction',transactionRouter)
 
 
 app.listen(port, ()=> {
