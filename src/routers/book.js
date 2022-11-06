@@ -34,6 +34,7 @@ bookRouter.post('/insert/', async (req, res)=>{
         await transaction.save()
         res.status(201).send(book)
     } catch(e) {
+        console.log(e)
         res.status(400).send("Unable to insert new book")
     }
 })
@@ -274,18 +275,18 @@ bookRouter.post('/return/', async (req, res) => {
 })
 
 
-bookRouter.get('/stats/', async (req, res) => {
+bookRouter.get('/dashboard-stats/', async (req, res) => {
     const today = getTodayDateOnly()
     let count = {}
     try {
-        count.todayDueBooks = await BookStatus.countDocuments({
+        count.dueToday = await BookStatus.countDocuments({
             dueDate: today
         })
-        count.dueBooks = await BookStatus.countDocuments({
-            dueDate: {
-                $lte: today
-            }
-        })
+        // count.dueBooks = await BookStatus.countDocuments({
+        //     dueDate: {
+        //         $lte: today
+        //     }
+        // })
         count.issuedToday = await BookStatus.countDocuments({
             issueDate: today
         })
