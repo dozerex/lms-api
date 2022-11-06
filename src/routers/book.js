@@ -260,7 +260,8 @@ bookRouter.post('/return/', async (req, res) => {
                 operation: "fine book",
                 accessionNumber,
                 fineAmount: fine.amount,
-                reason: fine.reason
+                reason: fine.reason,
+                enrollmentNumber
             })
             await newFine.save()
             await transactionFine.save()
