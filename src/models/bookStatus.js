@@ -79,7 +79,7 @@ BookStatusSchema.statics.dueBooks = function() {
     })
 }
 
-BookStatusSchema.statics.dueBoooksToday = function() {
+BookStatusSchema.statics.dueBooksToday = function() {
     const today = getTodayDateOnly()
     return this.find({
         $and: [
