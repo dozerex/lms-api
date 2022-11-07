@@ -69,12 +69,12 @@ BookStatusSchema.statics.isAvailable = function(accessionNumber) {
     })
 }
 
-BookStatusSchema.statics.dueBooks = function() {
+BookStatusSchema.statics.overdueBooks = function() {
     const today = getTodayDateOnly()
     return this.find({
         dueDate: {
             $exists: true,
-            $lte: today
+            $lt: today
         }
     })
 }
