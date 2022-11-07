@@ -27,7 +27,8 @@ bookRouter.post('/insert/', async (req, res)=>{
     const transaction = new Transaction({
         date: Date(Date.now()),
         operation: "insert book",
-        isbn: req.body.isbn
+        isbn: req.body.isbn,
+        title: req.body.title
     })
     try {
         await book.save();
