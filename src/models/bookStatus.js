@@ -44,6 +44,10 @@ const BookStatusSchema = new mongoose.Schema({
     status: {
         type: mongoose.Schema.Types.ObjectId,
         ref:"BookState"
+    },
+    shelf: {
+        type: String,
+        required: true
     }
 })
 

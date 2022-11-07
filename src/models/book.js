@@ -41,6 +41,10 @@ const BookSchema = new mongoose.Schema({
     books:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: "BookStatus"
+    }],
+    shelf: [{
+        type: String,
+        required: true
     }]
     // edition: {
     //     type: String,
@@ -98,7 +102,8 @@ BookSchema.pre('save', async function (next) {
         const book = new BookStatus({
             accessionNumber: aNum,
             available: true,
-            book: _id
+            book: _id,
+            shelf: this.shelf[i]
         })
         try {
             await book.save()
