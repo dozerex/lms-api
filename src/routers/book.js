@@ -73,20 +73,6 @@ bookRouter.get('/book-available/',async (req,res)=>{
     }
 })
 
-bookRouter.get('/due/', async (req, res) => {
-    const today = new Date()
-    try {
-        const books = await BookStatus.dueBooks()
-        if(!books) {
-            return res.send("No Due books")
-        }
-        return res.send(books)
-    } catch(e) {
-        res.status(400).send("Unable to process your request, please try again")
-    }
-})
-
-
 bookRouter.post('/issue/', async (req,res) => {
     const {accessionNumber,enrollmentNumber} = req.body
     let book,beneficiary
@@ -294,6 +280,34 @@ bookRouter.get('/dashboard-stats/', async (req, res) => {
     } catch(e) {
         console.log(e)
         res.status(400).send("Unable to fetch data")
+    }
+})
+
+
+bookRouter.get('/todaydue-list/', async (req, res) => {
+    const today = getTodayDateOnly()
+    try {
+        const books = await BookStatus.dueBooksToday()
+        if(!books) {
+            return res.send("No Due books")
+        }
+        return res.send(books)
+    } catch(e) {
+        res.status(400).send("Unable to process your request, please try again")
+    }
+})
+
+
+bookRouter.get('/overdue-list/', async (req, res) => {
+    const today = getTodayDateOnly()
+    try {
+        const overdueBooks = await BookStatus.overdueBooks()
+        if(!overdueBooks) {
+            res.send("No overdue books")
+        }
+        return res.send(overdueBooks)
+    } catch(e) {
+        res.status(400).send("Unable fetch request")
     }
 })
 
