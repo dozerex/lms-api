@@ -54,7 +54,7 @@ transactionRouter.get('/dashboard-stats/', async (req, res) => {
             date: {
                 $gte:today
             },
-            operation: "return book"
+            operation: "book returned"
         })
         const fine = await Transaction.find({
             date: {
