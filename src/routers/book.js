@@ -119,7 +119,7 @@ bookRouter.post('/issue/', async (req,res) => {
     }
     const transaction = new Transaction({
         date: Date(Date.now()),
-        operation: "issue book",
+        operation: "book issued",
         accessionNumber,
         issueDate: getTodayDateOnly(),
         dueDate: req.body.dueDate,
@@ -199,7 +199,7 @@ bookRouter.post('/return/', async (req, res) => {
         const {enrollmentNumber} = await Beneficiary.findOne({_id:beneficiary_id}).select('enrollmentNumber')
         const transaction = new Transaction({
             date: Date(Date.now()),
-            operation: "return book",
+            operation: "book returned",
             accessionNumber,
             returnDate: getTodayDateOnly(),
             enrollmentNumber
