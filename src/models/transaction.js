@@ -16,6 +16,9 @@ const TransactionSchema = new mongoose.Schema({
     isbn: {
         type: String
     },
+    title: {
+        type: String
+    },
     issueDate: {
         type: Date
     },
