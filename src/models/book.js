@@ -18,8 +18,8 @@ const BookSchema = new mongoose.Schema({
     isbn: {
         type: String,
         required: true,
-        minLength: 17,
-        maxLenth: 17,
+        minLength: 13,
+        maxLenth: 13,
         unique: true,
         index: true
     },
