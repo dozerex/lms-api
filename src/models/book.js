@@ -45,43 +45,35 @@ const BookSchema = new mongoose.Schema({
     shelf: [{
         type: String,
         required: true
-    }]
-    // edition: {
-    //     type: String,
-    //     required: true
-    // },
-    // placePublished: {
-    //     type: String,
-    // },
-    // publisher: {
-    //     type: String,
-    //     required: true
-    // },
-    // copyrightYear: {
-    //     type: Number
-    // },
-    // pages: {
-    //     type: Number,
-    //     required: true
-    // },
-    // vol: {
-    //     type: Number
-    // },
-    // source: {
-    //     type: String
-    // },
-    // billNO: {
-    //     type: String,
-    //     required: true
-    // },
-    // dateBought: {
-    //     type: Date,
-    //     required: true
-    // },
-    // cost: {
-    //     type: Number,
-    //     required: true
-    // },
+    }],
+    edition: {
+        type: String,
+        required: true
+    },
+    publisher: {
+        type: String,
+        required: true
+    },
+    copyrightYear: {
+        type: Date,
+        required: true
+    },
+    pages: {
+        type: Number,
+        required: true
+    },
+    billNO: {
+        type: String,
+        required: true
+    },
+    dateBought: {
+        type: Date,
+        required: true
+    },
+    cost: {
+        type: Number,
+        required: true
+    }
     
 })
 
@@ -91,7 +83,7 @@ BookSchema.pre('save', async function (next) {
     const numberOfBooks = this.copies;
     let accessionNumber;
     try {
-        let accessionArray = await Accession.find({})
+        const accessionArray = await Accession.find({})
         accessionNumber = accessionArray[0].accessionNumber
     } catch(e) {
         throw new Error("Unable to retrieve Accession Number from Database")
