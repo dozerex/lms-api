@@ -25,7 +25,14 @@ beneficiaryRouter.post('/insert/',(req,res)=> {
 
 beneficiaryRouter.get('/list/',async (req,res) => {
     try {
-        const beneficiaries = await Beneficiary.find({}).select(["email","name","enrollmentNumber","role"]);
+        const beneficiaries = await Beneficiary.find({},{
+            enrollmentNumber: 1,
+            name: 1,
+            email: 1,
+            mobile: 1,
+            year: 1,
+            program: 1
+        });
         const numberOfStudents = await Beneficiary.countDocuments({
             role: "student"
         })

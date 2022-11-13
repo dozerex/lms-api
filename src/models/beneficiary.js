@@ -45,6 +45,10 @@ const BeneficiarySchema = new mongoose.Schema({
     year: {
         type: Date,
     },
+    mobile: {
+        type: String, 
+        required: true
+    },
     booksLent: [{
         type:mongoose.Schema.Types.ObjectId,
         ref:"BookStatus"
