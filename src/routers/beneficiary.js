@@ -22,6 +22,25 @@ beneficiaryRouter.post('/insert/',(req,res)=> {
     })
 })
 
+beneficiaryRouter.post('/delete/', async (req, res) => {
+    console.log(req.body)
+    try {
+        const recordDelete = req.body;
+        const lent = await Beneficiary.find({enrollmentNumber:{$in:recordDelete}}, {booksLent: 1})
+        console.log(lent)
+        for(let i=0;i<lent.length;i++) {
+            if(lent[i].booksLent.length>0) {
+                throw new Error("Beneficiay have due books")
+            }
+        }
+        await Beneficiary.deleteMany({enrollmentNumber: {$in: recordDelete}})
+        res.send("Done")
+    } catch(e) {
+        console.log(e)
+        res.status(400).send("Beneficiary have due books");
+    }
+})
+
 
 beneficiaryRouter.get('/list/',async (req,res) => {
     try {
