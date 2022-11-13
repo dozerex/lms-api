@@ -312,6 +312,24 @@ bookRouter.get('/overdue-list/', async (req, res) => {
     }
 })
 
+bookRouter.get('/list/', async (req, res) => {
+    try {
+        const books = await Book.find({},{
+            title:1,
+            author: 1,
+            edition: -1,
+            available: -1,
+            publisher: 1,
+            copies: 1
+        });
+        res.send(books)
+    } catch(e) {
+        console.log(e);
+        res.status(400).send("Unable to fetch books")
+    }
+
+})
+
 
 module.exports = bookRouter
 
