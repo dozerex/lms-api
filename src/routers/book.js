@@ -312,6 +312,15 @@ bookRouter.get('/overdue-list/', async (req, res) => {
     }
 })
 
+bookRouter.get('/issued/', async (req, res) => {
+    try {
+        const booksList = await BookStatus.find({available: false}).populate("book").populate("issuedTo")
+        return res.send(booksList)
+    } catch(e) {
+        res.status(400).send('Unable fetch request')
+    }
+})
+
 bookRouter.get('/list/', async (req, res) => {
     try {
         const books = await Book.find({},{
