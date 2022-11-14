@@ -75,8 +75,8 @@ beneficiaryRouter.get('/:id/', async (req, res) => {
         const booksLent = beneficiary.booksLent;
         const books = await BookStatus.find({
             _id : {$in: booksLent}
-        })
-        res.send({beneficiary,books})
+        }).populate("book")
+        res.send(books)
     } catch(e) {
         console.log("error")
         return res.status(400).send("No Beneficiary")
