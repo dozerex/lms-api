@@ -351,6 +351,20 @@ bookRouter.get('/:id/', async (req, res) => {
     }
 })
 
+bookRouter.get('/book-state/:id/', async (req, res) => {
+    const accessionNumber = req.params.id;
+    try {
+        const book = await BookStatus.findOne({accessionNumber})
+        console.log(book)
+        const bookStateDetail = await BookState.findOne({
+            _id: book.status
+        })
+        res.send(bookStateDetail)
+    } catch(e) {
+        res.status(400).send("Unable to fetch data")
+    }
+})
+
 
 module.exports = bookRouter
 
