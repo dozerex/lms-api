@@ -329,7 +329,8 @@ bookRouter.get('/list/', async (req, res) => {
             edition: -1,
             available: -1,
             publisher: 1,
-            copies: 1
+            copies: 1,
+            isbn: 1
         });
         res.send(books)
     } catch(e) {
