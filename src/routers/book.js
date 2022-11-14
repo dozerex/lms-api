@@ -340,6 +340,17 @@ bookRouter.get('/list/', async (req, res) => {
 
 })
 
+bookRouter.get('/:id/', async (req, res) => {
+    const isbn = req.params.id;
+    try {
+        const mainBook = await Book.findOne({isbn})
+        const books = await BookStatus.find({book: mainBook._id}).populate("issuedTo")
+        res.send(books)
+    } catch(e) {
+        res.status(400).send("No Book")
+    }
+})
+
 
 module.exports = bookRouter
 
