@@ -52,7 +52,11 @@ const BeneficiarySchema = new mongoose.Schema({
     booksLent: [{
         type:mongoose.Schema.Types.ObjectId,
         ref:"BookStatus"
-    }]
+    }],
+    password: {
+        type: String,
+        required: true
+    }
 })
 
 const Beneficiary = mongoose.model('Beneficiary',BeneficiarySchema)
